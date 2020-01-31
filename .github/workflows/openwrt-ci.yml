@@ -7,7 +7,7 @@
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
-name: 个人定制的openwrt1.0
+name: 个人定制的openwrt2.0
 
 on:
   push:
@@ -97,18 +97,18 @@ jobs:
           # 
 
           # 编译x64固件:
-          # cat >> .config <<EOF
-          # CONFIG_TARGET_x86=y
-          # CONFIG_TARGET_x86_64=y
-          # CONFIG_TARGET_x86_64_Generic=y
-          # EOF
+          cat >> .config <<EOF
+          CONFIG_TARGET_x86=y
+          CONFIG_TARGET_x86_64=y
+          CONFIG_TARGET_x86_64_Generic=y
+          EOF
 
           # 编译树莓派固件:
-          cat >> .config <<EOF
-          CONFIG_TARGET_brcm2708=y
-          CONFIG_TARGET_brcm2708_bcm2710=y
-          CONFIG_TARGET_brcm2708_bcm2710_DEVICE_rpi-3=y
-          EOF
+          # cat >> .config <<EOF
+          # CONFIG_TARGET_brcm2708=y
+          # CONFIG_TARGET_brcm2708_bcm2710=y
+          # CONFIG_TARGET_brcm2708_bcm2710_DEVICE_rpi-3=y
+          # EOF
 
           # 固件压缩:
           # cat >> .config <<EOF
@@ -161,6 +161,9 @@ jobs:
           CONFIG_PACKAGE_luci-app-mwan3helper=y
           CONFIG_PACKAGE_luci-app-mwan3=y
           CONFIG_PACKAGE_luci-app-smartdns=y
+          CONFIG_PACKAGE_luci-app-ttyd=y
+          CONFIG_PACKAGE_luci-app-xlnetacc=n
+          CONFIG_PACKAGE_luci-app-unblockmusic=n
           EOF
 
           # LuCI主题:
