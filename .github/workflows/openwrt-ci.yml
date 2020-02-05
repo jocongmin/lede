@@ -7,7 +7,7 @@
 # <https://github.com/KFERMercer/OpenWrt-CI>
 #
 
-name: 个人定制的x86-openwrt
+name: 个人定制的x86-openwrt-passwall
 
 on:
   push:
@@ -55,7 +55,22 @@ jobs:
 
       - name: Update feeds
         run: |
+          ./scripts/feeds clean
           ./scripts/feeds update -a
+          rm -rf feeds/lienol/lienol/v2ray
+          rm -rf feeds/lienol/lienol/openssl1.1
+          rm -rf feeds/lienol/lienol/trojan
+          rm -rf feeds/lienol/lienol/ipt2socks
+          rm -rf feeds/lienol/lienol/shadowsocks-libev-new
+          rm -rf feeds/lienol/lienol/shadowsocksr-libev
+          rm -rf feeds/lienol/lienol/pdnsd-alt
+          rm -rf feeds/lienol/package/verysync
+          rm -rf feeds/lienol/lienol/luci-app-verysync
+          rm -rf package/lean/kcptun
+          rm -rf package/lean/luci-app-kodexplorer
+          rm -rf package/lean/luci-app-pppoe-relay
+          rm -rf package/lean/luci-app-pptp-server
+          rm -rf package/lean/luci-app-v2ray-server
           ./scripts/feeds install -a
 
       - name: Generate configuration file
@@ -150,10 +165,10 @@ jobs:
           CONFIG_PACKAGE_luci-app-aria2=y
           CONFIG_PACKAGE_luci-app-frpc=y
           CONFIG_PACKAGE_luci-app-minidlna=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
           CONFIG_PACKAGE_luci-app-v2ray-server=y
           CONFIG_PACKAGE_luci-app-webadmin=y
           CONFIG_PACKAGE_luci-app-wireguard=y
@@ -162,6 +177,7 @@ jobs:
           CONFIG_PACKAGE_luci-app-mwan3=y
           CONFIG_PACKAGE_luci-app-smartdns=y
           CONFIG_PACKAGE_luci-app-ttyd=y
+          CONFIG_PACKAGE_luci-app-passwall=y
           CONFIG_PACKAGE_luci-app-xlnetacc=n
           CONFIG_PACKAGE_luci-app-unblockmusic=n
           EOF
