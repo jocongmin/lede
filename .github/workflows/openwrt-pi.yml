@@ -7,11 +7,12 @@
 # <https://github.com/KFERMercer/OpenWrt-CI>
 # 
 
-name: OpenWrt-CI
+name: OpenWrt-CI-pi
 
 on:
-  schedule:
-    - cron: 0 20 * * *
+  push:
+    branches: 
+      - master
 
 jobs:
 
@@ -50,11 +51,96 @@ jobs:
 
       - name: Update feeds
         run: |
+          ./scripts/feeds clean
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Generate configuration file
-        run: make defconfig
+        run: |
+          rm -f ./.config*
+          touch ./.config
+
+          # 编译x64固件:
+          cat >> .config <<EOF
+          CONFIG_TARGET_x86=n
+          CONFIG_TARGET_x86_64=n
+          CONFIG_TARGET_x86_64_Generic=n
+          EOF
+
+          # 编译树莓派固件:
+          cat >> .config <<EOF
+          CONFIG_TARGET_brcm2708=y
+          CONFIG_TARGET_brcm2708_bcm2710=y
+          CONFIG_TARGET_brcm2708_bcm2710_DEVICE_rpi-3=y
+          EOF
+
+          # 固件压缩:
+          # cat >> .config <<EOF
+          # CONFIG_TARGET_IMAGES_GZIP=y
+          # EOF
+
+          # 编译UEFI固件:
+          # cat >> .config <<EOF
+          # CONFIG_EFI_IMAGES=y
+          # EOF
+
+          #IPv6支持:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
+          CONFIG_PACKAGE_ipv6helper=y
+          EOF
+
+          # 常用LuCI插件选择:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_luci-app-aria2=y
+          CONFIG_PACKAGE_luci-app-adbyby-plus=y
+          CONFIG_PACKAGE_luci-app-frpc=y
+          CONFIG_PACKAGE_luci-app-minidlna=y
+          CONFIG_PACKAGE_luci-app-ssr-plus=y
+          CONFIG_PACKAGE_luci-app-webadmin=y
+          CONFIG_PACKAGE_luci-app-wireguard=y
+          CONFIG_PACKAGE_luci-app-wrtbwmon=y
+          CONFIG_PACKAGE_luci-app-mwan3helper=y
+          CONFIG_PACKAGE_luci-app-mwan3=y
+          CONFIG_PACKAGE_luci-app-smartdns=y
+          CONFIG_PACKAGE_luci-app-ttyd=y
+          CONFIG_PACKAGE_luci-app-xlnetacc=n
+          CONFIG_PACKAGE_luci-app-unblockmusic=n
+          CONFIG_PACKAGE_luci-app-ipsec-virtual=n
+          CONFIG_PACKAGE_luci-app-zerotier=n
+          EOF
+
+          # LuCI主题:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_luci-theme-netgear=y
+          EOF
+
+          # 常用软件包:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_curl=y
+          # CONFIG_PACKAGE_htop=y
+          CONFIG_PACKAGE_nano=y
+          # CONFIG_PACKAGE_screen=y
+          # CONFIG_PACKAGE_tree=y
+          # CONFIG_PACKAGE_vim-fuller=y
+          CONFIG_PACKAGE_wget=y
+          CONFIG_PACKAGE_kmod-usb-net=y
+          CONFIG_PACKAGE_kmod-usb-net-asix=y
+          CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
+          EOF
+
+          # 取消编译VMware镜像以及镜像填充 (不要删除被缩进的注释符号):
+          cat >> .config <<EOF
+          # CONFIG_TARGET_IMAGES_PAD is not set
+          # CONFIG_VMDK_IMAGES is not set
+          EOF
+
+          # 
+          # ========================固件定制部分结束========================
+          # 
+
+          sed -i 's/^[ \t]*//g' ./.config
+          make defconfig
 
       - name: Make download
         run: |
